@@ -95,7 +95,7 @@ class AwardControllerTest {
 		public void getAward_404DueToBadURLTest() throws Exception {
 			when(awardServiceImpl.findAward(101L)).thenReturn(award);
 			when (mapper.toDto(award)).thenReturn(awardDTO);
-			RequestBuilder request = MockMvcRequestBuilders.get("/102")
+			RequestBuilder request = MockMvcRequestBuilders.get("/awards/102")
 					.accept(MediaType.APPLICATION_JSON);
 			
 			mockMvc.perform(request).andExpect(status().isNotFound()).andReturn();

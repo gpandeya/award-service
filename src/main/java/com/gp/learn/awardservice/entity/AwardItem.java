@@ -5,6 +5,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import org.springframework.lang.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -13,6 +15,7 @@ public class AwardItem {
 	@Id
 	@GeneratedValue
 	private Long id;
+	
 	private Long economst;
 	
 	@OneToOne

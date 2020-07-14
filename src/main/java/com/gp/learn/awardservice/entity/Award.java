@@ -13,8 +13,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.gp.learn.awardservice.valueobject.PriceEffectiveDate;
+
 
 @Entity
 public class Award {
@@ -22,8 +25,12 @@ public class Award {
 	@Id
 	@GeneratedValue
 	private Long id;
+	
+	@NotBlank(message ="award id is mandatory.")
 	private String awardId;
+
 	private LocalDateTime awardDate;
+	
 	private Long volume;
 	
 	@Embedded

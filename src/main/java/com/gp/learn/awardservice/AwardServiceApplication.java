@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.validation.Errors;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -25,6 +26,7 @@ public class AwardServiceApplication {
 	@Bean
 	public Docket swaggerConfiguration() {
 		return new Docket(DocumentationType.SWAGGER_2)
+				//.ignoredParameterTypes(Errors.class)
 				.select()
 				.paths(PathSelectors.ant("/awards/*"))
 				.apis(RequestHandlerSelectors.basePackage("com.gp"))

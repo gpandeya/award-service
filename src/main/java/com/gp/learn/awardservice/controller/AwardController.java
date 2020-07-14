@@ -1,10 +1,13 @@
 package com.gp.learn.awardservice.controller;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gp.learn.awardservice.dto.AwardDTO;
 import com.gp.learn.awardservice.entity.Award;
 import com.gp.learn.awardservice.entity.AwardItem;
+import com.gp.learn.awardservice.exception.AwardNotFoundException;
+import com.gp.learn.awardservice.exception.BadRequestException;
 import com.gp.learn.awardservice.mapper.AwardMapper;
 import com.gp.learn.awardservice.service.AwardService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/awards")
@@ -32,6 +38,7 @@ public class AwardController {
 	@Autowired
 	AwardMapper mapper;
 	Logger logger = LoggerFactory.getLogger(AwardController.class);
+
 
 	@ApiOperation(value = "sanity check endpoint for awards APIs",
 				notes="to be added later", 
@@ -46,18 +53,26 @@ public class AwardController {
 						+ "Validations for other attributes will be added later.",
 				response=ResponseEntity.class,httpMethod = "POST",code=201)
 	@PostMapping("/")
-	public ResponseEntity<AwardDTO> addAward(@ApiParam(value="single award that need to be created.",required=true)
-		@RequestBody AwardDTO awardDTO) {
+	public ResponseEntity<AwardDTO> addAward(
+		@Valid @RequestBody AwardDTO awardDTO, @ApiIgnore Errors errors) {
+		StringBuilder errorMessageBuilder= new StringBuilder();
+		
+		if(errors.hasErrors()) {
+			errors.getAllErrors().stream().forEach(obj-> {
+				errorMessageBuilder.append(obj.getDefaultMessage());
+				errorMessageBuilder.append(",");
+			});
+			throw new BadRequestException ("Validation failed", errorMessageBuilder.toString());
+		}
 		logger.info("Request Payload {} ",awardDTO);
 		
 		AwardItem item = new AwardItem();
 		item.setEconomst(awardDTO.getItemDTO().getEconomst());
-
 		Award incomingAward = mapper.toEntity(awardDTO);
 		logger.info("After conversion {} ",incomingAward);
-		
+
 		Award savedAward = awardServiceImpl.addAward(incomingAward);
-		
+	
 		ResponseEntity<AwardDTO> response = ResponseEntity.status(HttpStatus.CREATED)
 														.body(mapper.toDto(savedAward));
 		
@@ -73,6 +88,8 @@ public class AwardController {
 			+ " Note that it is not the id sent by C1.")@PathVariable String id) {
 		logger.info("Request received for id : {} ", id);
 		Award award = awardServiceImpl.findAward(Long.parseLong(id));
+		if(award ==null)
+			throw new AwardNotFoundException("Not Found","award : "+id+" does not exist.");
 		AwardDTO awardDTO = mapper.toDto(award);
 		return awardDTO;
 		

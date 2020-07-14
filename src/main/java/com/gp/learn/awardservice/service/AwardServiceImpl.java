@@ -15,7 +15,7 @@ public class AwardServiceImpl implements AwardService{
 	private AwardRepository repository;
 	
 	@Override
-	public Award addAward(Award incomingAward) {
+	public Award addAward(Award incomingAward) throws IllegalArgumentException{
 		incomingAward.getNotes().forEach(note -> note.setAward(incomingAward));
 		return repository.save(incomingAward);
 		

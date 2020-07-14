@@ -3,6 +3,11 @@ package com.gp.learn.awardservice.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.format.annotation.NumberFormat;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -10,8 +15,12 @@ import io.swagger.annotations.ApiModelProperty;
 	+ " It is deeply populdated DTO that has notes and item populated.")
 public class AwardDTO {
 	private Long id;
+	@ApiModelProperty(value="Award ID from ClarusOne .")
+	@NotBlank(message ="award id is mandatory.")
 	private String awardId;
+	@Future
 	private LocalDateTime awardDate;
+	
 	private Long volume;
 	
 	@ApiModelProperty(notes="Original Price Effective Date",required=true,allowEmptyValue = false)
